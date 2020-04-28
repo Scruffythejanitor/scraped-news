@@ -27,7 +27,12 @@ mongoose.connect("mongodb://localhost/scraped-news", { useNewUrlParser: true });
 
 
 app.get("/", function (req, res) {
+  console.log("++++++++++++++++++++++++++++");
+  
+  // console.log(articles);/
+  
   res.render("index")
+
 })
 
 app.get("/scrape", function (req, res) {
@@ -37,10 +42,9 @@ app.get("/scrape", function (req, res) {
     .then(function (response) {
 
       var $ = cheerio.load(response.data);
-      console.log($);
-      
 
-      
+
+
 
       $("h2.title").each(function (i, element) {
 
@@ -58,16 +62,26 @@ app.get("/scrape", function (req, res) {
         db.Article.create(result)
           .then(function (dbArticle) {
 
-            console.log(dbArticle);
+            // console.log(dbArticle);
           })
           .catch(function (err) {
 
             console.log(err);
           });
-      console.log(result)
+        // console.log(result)
       });
+
+      db.Article.find({})
+      .then(function(dbArticle){
+        console.log(dbArticle);
+        
+        res.render("index", {dbArticle})
+        // res.json(dbArticle)
+      })
+      // console.log({articles: db.Article});
+      
       // res.send("Scrape Complete");
-      res.render("index")
+      // res.render("index")
     });
 });
 
