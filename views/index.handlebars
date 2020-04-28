@@ -1,0 +1,13 @@
+<div class="container">
+    <div class="jumbotron"><h1>This is a jumbotron</h1>
+    <form action="/scrape">
+        <button type="submit" class="btn btn-primary">GET SOME NEWS</button>
+    </form>
+    </div>
+    {{#each articles}}
+    <div class="card">
+        <div class="card-header">{{title}}</div>
+        <div class="card-body">{{link}}</div>
+    </div>
+    {{/each}}
+</div>
