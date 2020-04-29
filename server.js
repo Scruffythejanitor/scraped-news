@@ -72,6 +72,7 @@ app.get("/scrape", function (req, res) {
       });
 
       db.Article.find({})
+      .lean()
       .then(function(dbArticle){
         console.log(dbArticle);
         
