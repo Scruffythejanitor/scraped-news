@@ -28,9 +28,9 @@ mongoose.connect("mongodb://localhost/scraped-news", { useNewUrlParser: true });
 
 app.get("/", function (req, res) {
   console.log("++++++++++++++++++++++++++++");
-  
+
   // console.log(articles);/
-  
+
   res.render("index")
 
 })
@@ -49,9 +49,14 @@ app.get("/scrape", function (req, res) {
       $("h2.title").each(function (i, element) {
 
         var result = {};
-
+        console.log(result.teaser);
+        
 
         result.title = $(this)
+          .children("a")
+          .text();
+        result.teaser = $(this)
+          .children(".teaser")
           .children("a")
           .text();
         result.link = $(this)
@@ -72,15 +77,15 @@ app.get("/scrape", function (req, res) {
       });
 
       db.Article.find({})
-      .lean()
-      .then(function(dbArticle){
-        console.log(dbArticle);
-        
-        res.render("index", {dbArticle})
-        // res.json(dbArticle)
-      })
+        .lean()
+        .then(function (dbArticle) {
+          console.log(dbArticle);
+
+          res.render("index", { dbArticle })
+          // res.json(dbArticle)
+        })
       // console.log({articles: db.Article});
-      
+
       // res.send("Scrape Complete");
       // res.render("index")
     });
@@ -88,17 +93,42 @@ app.get("/scrape", function (req, res) {
 
 
 app.get("/articles", function (req, res) {
+  db.Article.find()
+    .then(function (dbPopulate) {
+
+      res.json(dbPopulate);
+    })
+    .catch(function (err) {
+      res.json(err);
+    });
 
 });
 
 
 app.get("/articles/:id", function (req, res) {
-
+  db.Article.findById(req.params.id)
+    .populate("note")
+    .then(function (dbPopulate) {
+      res.json(dbPopulate);
+    })
+    .catch(function (err) {
+      res.json(err);
+    });
 });
 
 
 app.post("/articles/:id", function (req, res) {
+  db.Note.create(req.body)
+    .then(function (dbPopulate) {
 
+      return db.Article.findOneAndUpdate({ _id: req.params.id }, { $push: { note: dbPopulate._id } }, { new: true });
+    })
+    .then(function (dbPopulate) {
+      res.json(dbPopulate);
+    })
+    .catch(function (err) {
+      res.json(err);
+    });
 });
 
 
