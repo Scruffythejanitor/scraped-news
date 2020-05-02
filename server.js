@@ -126,7 +126,7 @@ app.get("/articles/:id", function (req, res) {
 
 app.post("/articles/:id", function (req, res) {
   db.Note.create(req.body)
-  console.log(req.body);
+  
   
     .then(function (dbArticle) {
 
