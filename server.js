@@ -30,7 +30,14 @@ mongoose.connect(MONGODB_URI);
 
 app.get("/", function (req, res) {
   
-  res.render("index")
+  db.Article.find({}, null, {sort: {created: -1}}, function(err, data) {
+		if(data.length === 0) {
+			res.render("index", {message: "Sooory There Is No Strange News Yet! Click Button To Get News!"});
+		}
+		else{
+			res.render("index", {articles: data});
+		}
+	});
 
 })
 
@@ -108,8 +115,8 @@ app.get("/articles", function (req, res) {
 app.get("/articles/:id", function (req, res) {
   db.Article.findById(req.params.id)
     .populate("note")
-    .then(function (dbPopulate) {
-      res.json(dbPopulate);
+    .then(function (dbArticle) {
+      res.json(dbArticle);
     })
     .catch(function (err) {
       res.json(err);
@@ -119,12 +126,14 @@ app.get("/articles/:id", function (req, res) {
 
 app.post("/articles/:id", function (req, res) {
   db.Note.create(req.body)
-    .then(function (dbPopulate) {
+  console.log(req.body);
+  
+    .then(function (dbArticle) {
 
-      return db.Article.findOneAndUpdate({ _id: req.params.id }, { $push: { note: dbPopulate._id } }, { new: true });
+      return db.Article.findOneAndUpdate({ _id: req.params.id }, { $push: { note: dbArticle._id } }, { new: true });
     })
-    .then(function (dbPopulate) {
-      res.json(dbPopulate);
+    .then(function (dbArticle) {
+      res.json(dbArticle);
     })
     .catch(function (err) {
       res.json(err);

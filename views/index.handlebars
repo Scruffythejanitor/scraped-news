@@ -1,13 +1,38 @@
 <div class="container">
-    <div class="jumbotron"><h1>This is a jumbotron</h1>
+    <div class="jumbotron text-center"><h1>STRANGE NEWS</h1><h2>{{message}}</h2>
     <form action="/scrape">
         <button type="submit" class="btn btn-primary">GET SOME NEWS</button>
     </form>
     </div>
     {{#each dbArticle}}
-    <div class="card">
-        <div class="card-header">{{title}}</div>
-        <div class="card-body"><a href="{{link}}">{{teaser}}</a></div>
+    <div class="card mb-4 shadow">
+        <div class="card-body">
+            <div class="media">
+                <div class="media-body">
+                    <h5 class="mt-0 mb-1">{{title}}</h5>
+                    <a href="{{link}}">{{teaser}}</a>
+                </div>
+            </div>
+            
+        </div>
+        <div class="card-footer">
+            <div class=" d-flex justify-content-end">
+            <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#note{{_id}}" aria-expanded="false" aria-controls="note{{_id}}">ADD A NOTE</button>
+            </div>
+            <div class="collapse" id="note{{_id}}">
+               <form method="POST" action="/articles/{{_id}}">
+                   <div class="form-group">
+                       <label for="textArea"></label>
+                       <textarea class="form-control" id="textArea" name="note" rows="3" placeholder="Add Your Note Here"></textarea>
+                       <div class="d-flex justify-content-end mt-2">
+                            <button type="submit" class="btn btn-success">Submit Note</button>
+                       </div>
+                       <input type="hidden" name="id" value="{{_id}}">
+                    </div>
+               </form>
+            </div>
+        </div>
+        <div class="card-body">notes</div>
     </div>
     {{/each}}
 </div>
