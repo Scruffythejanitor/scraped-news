@@ -22,8 +22,10 @@ app.engine("handlebars", handlebars({
 }));
 app.set("view engine", "handlebars");
 
-mongoose.connect("mongodb://localhost/scraped-news", { useNewUrlParser: true });
+// mongoose.connect("mongodb://localhost/scraped-news", { useNewUrlParser: true });
+var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlines";
 
+mongoose.connect(MONGODB_URI);
 
 
 app.get("/", function (req, res) {
@@ -46,20 +48,25 @@ app.get("/scrape", function (req, res) {
 
 
 
-      $("h2.title").each(function (i, element) {
+      $("article").each(function (i, element) {
 
         var result = {};
-        console.log(result.teaser);
-        
+
+
 
         result.title = $(this)
+          .children(".item-info")
+          .children("h2")
           .children("a")
           .text();
-        result.teaser = $(this)
-          .children(".teaser")
+          result.teaser = $(this)
+          .children(".item-info")
+          .children("p")
           .children("a")
           .text();
-        result.link = $(this)
+          result.link = $(this)
+          .children(".item-info")
+          .children("h2")
           .children("a")
           .attr("href");
 
@@ -67,13 +74,12 @@ app.get("/scrape", function (req, res) {
         db.Article.create(result)
           .then(function (dbArticle) {
 
-            // console.log(dbArticle);
+            console.log(dbArticle);
           })
           .catch(function (err) {
 
             console.log(err);
           });
-        // console.log(result)
       });
 
       db.Article.find({})
@@ -82,21 +88,21 @@ app.get("/scrape", function (req, res) {
           console.log(dbArticle);
 
           res.render("index", { dbArticle })
-          // res.json(dbArticle)
         })
-      // console.log({articles: db.Article});
+        .catch(function (err) {
 
-      // res.send("Scrape Complete");
-      // res.render("index")
+          console.log(err);
+        });
+
     });
 });
 
 
 app.get("/articles", function (req, res) {
   db.Article.find()
-    .then(function (dbPopulate) {
+    .then(function (dbArticle) {
 
-      res.json(dbPopulate);
+      res.json(dbArticle);
     })
     .catch(function (err) {
       res.json(err);
