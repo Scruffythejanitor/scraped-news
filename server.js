@@ -22,17 +22,14 @@ app.engine("handlebars", handlebars({
 }));
 app.set("view engine", "handlebars");
 
-// mongoose.connect("mongodb://localhost/scraped-news", { useNewUrlParser: true });
-var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlines";
+// mongoose.connect("mongodb://localhost/scraped-news", { useUnifiedTopology: true, useNewUrlParser: true });
+var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/scraped-news";
 
 mongoose.connect(MONGODB_URI);
 
 
 app.get("/", function (req, res) {
-  console.log("++++++++++++++++++++++++++++");
-
-  // console.log(articles);/
-
+  
   res.render("index")
 
 })
@@ -45,31 +42,28 @@ app.get("/scrape", function (req, res) {
 
       var $ = cheerio.load(response.data);
 
-
-
-
       $("article").each(function (i, element) {
 
         var result = {};
 
-
-
         result.title = $(this)
-          .children(".item-info")
-          .children("h2")
-          .children("a")
-          .text();
-          result.teaser = $(this)
-          .children(".item-info")
-          .children("p")
-          .children("a")
-          .text();
-          result.link = $(this)
-          .children(".item-info")
-          .children("h2")
-          .children("a")
-          .attr("href");
-
+        .children(".item-info-wrap")
+        .children(".item-info")
+        .children("h2")
+        .children("a")
+        .text();
+        result.teaser = $(this)
+        .children(".item-info-wrap")
+        .children(".item-info")
+        .children("p")
+        .children("a")
+        .text();
+        result.link = $(this)
+        .children(".item-info-wrap")
+        .children(".item-info")
+        .children("h2")
+        .children("a")
+        .attr("href");
 
         db.Article.create(result)
           .then(function (dbArticle) {
