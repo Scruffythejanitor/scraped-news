@@ -1,18 +1,16 @@
-var mongoose = require("mongoose");
+const mongoose = require("mongoose");
 
-// Save a reference to the Schema constructor
-var Schema = mongoose.Schema;
+const Schema = mongoose.Schema;
 
-
-var NoteSchema = new Schema({
-  
-  title: String,
- 
-  body: String
+const NoteSchema = new Schema({
+  title: {
+  	type: String
+  }, 
+  body: {
+  	type: String
+  }
 });
 
-
-var Note = mongoose.model("Note", NoteSchema);
-
+const Note = mongoose.model("Note", NoteSchema);
 
 module.exports = Note;

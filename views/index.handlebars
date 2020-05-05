@@ -1,8 +1,14 @@
 <div class="container">
-    <div class="jumbotron text-center"><h1>STRANGE NEWS</h1><h2>{{message}}</h2>
-    <form action="/scrape">
-        <button type="submit" class="btn btn-primary">GET SOME NEWS</button>
-    </form>
+    <div class="jumbotron text-center">
+        <h1>STRANGE NEWS</h1>
+        <h2>{{message}}</h2>
+        <form method="POST" action="/api/scrape">
+            <button type="submit" class="btn btn-primary">GET SOME NEWS</button>
+        </form>
+        <form method="POST" action="/api/reduce?_method=DELETE">
+            <button type="submit" class="btn btn-danger">DELETE SOME OLD NEWS</button>
+            <input type="hidden" name="_method" value="DELETE">
+        </form>
     </div>
     {{#each dbArticle}}
     <div class="card mb-4 shadow">
@@ -13,26 +19,39 @@
                     <a href="{{link}}">{{teaser}}</a>
                 </div>
             </div>
-            
+
         </div>
         <div class="card-footer">
-            <div class=" d-flex justify-content-end">
-            <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#note{{_id}}" aria-expanded="false" aria-controls="note{{_id}}">ADD A NOTE</button>
+            <div class=" d-flex justify-content-between">
+                {{!-- <form method="POST" action="/api/delete/article/{{_id}}?_method=DELETE">
+                    <button class="btn btn-danger"><i class="fas fa-trash-alt"></i></button>
+                    <input type="hidden" name="_method" value="DELETE">
+                </form> --}}
+                <form method="POST" action="/api/save/article/{{_id}}?_method=PUT">
+                    <button class="btn btn-success">SAVE ARTICLE</button>
+                    <input type="hidden" name="_method" value="PUT">
+                </form>
+                <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#note{{_id}}"
+                    aria-expanded="false" aria-controls="note{{_id}}">ADD A NOTE</button>
             </div>
             <div class="collapse" id="note{{_id}}">
-               <form method="POST" action="/articles/{{_id}}">
-                   <div class="form-group">
-                       <label for="textArea"></label>
-                       <textarea class="form-control" id="textArea" name="note" rows="3" placeholder="Add Your Note Here"></textarea>
-                       <div class="d-flex justify-content-end mt-2">
+                <form method="POST" action="/api/create/notes/{{_id}}">
+                    <div class="form-group">
+                        <label for="textArea"></label>
+                        <textarea class="form-control" id="textArea" name="note" rows="3"
+                            placeholder="Add Your Note Here"></textarea>
+                        <div class="d-flex justify-content-end mt-2">
                             <button type="submit" class="btn btn-success">Submit Note</button>
-                       </div>
-                       <input type="hidden" name="id" value="{{_id}}">
+                        </div>
+                        <input type="hidden" name="id" value="{{_id}}">
                     </div>
-               </form>
+                </form>
             </div>
         </div>
-        <div class="card-body">notes</div>
+        <div class="card-body">
+            {{#each note}}
+            {{/each}}
+        </div>
     </div>
     {{/each}}
 </div>
